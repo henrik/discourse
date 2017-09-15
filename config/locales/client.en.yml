@@ -1923,6 +1923,7 @@ en:
         rebake: "Rebuild HTML"
         unhide: "Unhide"
         change_owner: "Change Ownership"
+        suspend_poster: "Suspend Poster"
 
       actions:
         flag: 'Flag'
@@ -3276,6 +3277,7 @@ en:
         suspended_by: "Suspended by"
         suspended_until: "(until %{until})"
         cant_suspend: "This user cannot be suspended."
+        suspend_success: "The user was suspended."
         delete_all_posts: "Delete all posts"
 
         # keys ending with _MF use message format, see https://meta.discourse.org/t/message-format-support-for-localization/7035 for details

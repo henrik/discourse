@@ -46,6 +46,15 @@ export default createWidget('post-admin-menu', {
       }));
     }
 
+    if (this.currentUser.staff) {
+      contents.push(this.attach('post-admin-menu-button', {
+        icon: 'ban',
+        label: 'post.controls.suspend_poster',
+        action: 'suspendPoster',
+        className: 'suspend-poster btn-danger'
+      }));
+    }
+
     // toggle Wiki button
     if (attrs.wiki) {
       contents.push(this.attach('post-admin-menu-button', {

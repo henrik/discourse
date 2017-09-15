@@ -1,30 +1,32 @@
 import { moduleForWidget, widgetTest } from 'helpers/widget-test';
-import Topic from 'discourse/models/topic';
-import Post from 'discourse/models/post';
-
 moduleForWidget('post-stream');
 
 function postStreamTest(name, attrs) {
   widgetTest(name, {
     template: `{{mount-widget widget="post-stream" args=(hash posts=posts)}}`,
-    beforeEach() {
-      this.set('posts', attrs.posts.call(this));
+    beforeEach(store) {
+      const site = this.container.lookup('site:main');
+      let posts = attrs.posts.call(this, store, site).map(p => {
+        p.site = site;
+        return store.createRecord('post', p);
+      });
+      this.set('posts', posts);
     },
     test: attrs.test
   });
 }
 
 postStreamTest('basics', {
-  posts() {
-    const site = this.container.lookup('site:main');
-    const topic = Topic.create({ details: { created_by: { id: 123 } } });
+  posts(store, site) {
+    let topic = store.createRecord('topic', { details: { created_by: { id: 123 } } });
+
     return [
-      Post.create({ topic, id: 1, post_number: 1, user_id: 123, primary_group_name: 'trout', avatar_template: '/images/avatar.png' }),
-      Post.create({ topic, id: 2, post_number: 2, post_type: site.get('post_types.moderator_action') }),
-      Post.create({ topic, id: 3, post_number: 3, hidden: true }),
-      Post.create({ topic, id: 4, post_number: 4, post_type: site.get('post_types.whisper') }),
-      Post.create({ topic, id: 5, post_number: 5, wiki: true, via_email: true }),
-      Post.create({ topic, id: 6, post_number: 6, via_email: true, is_auto_generated: true }),
+      { topic, id: 1, post_number: 1, user_id: 123, primary_group_name: 'trout', avatar_template: '/images/avatar.png' },
+      { topic, id: 2, post_number: 2, post_type: site.get('post_types.moderator_action') },
+      { topic, id: 3, post_number: 3, hidden: true },
+      { topic, id: 4, post_number: 4, post_type: site.get('post_types.whisper') },
+      { topic, id: 5, post_number: 5, wiki: true, via_email: true },
+      { topic, id: 6, post_number: 6, via_email: true, is_auto_generated: true },
     ];
   },
 
@@ -53,10 +55,10 @@ postStreamTest('basics', {
 });
 
 postStreamTest('deleted posts', {
-  posts() {
-    const topic = Topic.create({ details: { created_by: { id: 123 } } });
+  posts(store) {
+    const topic = store.createRecord('topic', { details: { created_by: { id: 123 } } });
     return [
-      Post.create({ topic, id: 1, post_number: 1, deleted_at: new Date().toString() }),
+      { topic, id: 1, post_number: 1, deleted_at: new Date().toString() },
     ];
   },
 

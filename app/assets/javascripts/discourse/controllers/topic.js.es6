@@ -12,10 +12,12 @@ import debounce from 'discourse/lib/debounce';
 import isElementInViewport from "discourse/lib/is-element-in-viewport";
 import QuoteState from 'discourse/lib/quote-state';
 import { userPath } from 'discourse/lib/url';
+import optionalService from 'discourse/lib/optional-service';
 
 export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
   composer: Ember.inject.controller(),
   application: Ember.inject.controller(),
+  adminTools: optionalService(),
   multiSelect: false,
   allPostsSelected: false,
   editingTopic: false,
@@ -682,6 +684,18 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
     changePostOwner(post) {
       this.get('selectedPosts').addObject(post);
       this.send('changeOwner');
+    },
+
+    suspendPoster(post) {
+      this.get('adminTools').showSuspendModal(
+        this.store.createRecord('user', { id: post.user_id }),
+        {
+          post,
+          successCallback: () => {
+            bootbox.alert(I18n.t("admin.user.suspend_success"));
+          }
+        }
+      );
     },
 
     convertToPublicTopic() {

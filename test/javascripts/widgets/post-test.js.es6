@@ -607,6 +607,23 @@ widgetTest("change owner", {
   }
 });
 
+widgetTest("suspend user", {
+  template: '{{mount-widget widget="post" args=args suspendPoster="suspendPoster"}}',
+  beforeEach() {
+    this.currentUser.staff = true;
+    this.set('args', { canManage: true });
+    this.on('suspendPoster', () => this.suspended = true);
+  },
+  test(assert) {
+    click('.post-menu-area .show-post-admin-menu');
+    click('.post-admin-menu .suspend-poster');
+    andThen(() => {
+      assert.ok(this.suspended);
+      assert.equal(this.$('.post-admin-menu').length, 0, 'also hides the menu');
+    });
+  }
+});
+
 widgetTest("reply", {
   template: '{{mount-widget widget="post" args=args replyToPost="replyToPost"}}',
   beforeEach() {
