@@ -22,16 +22,19 @@ createWidget('user-menu-links', {
     const path = attrs.path;
     const glyphs = [];
 
-    if (extraGlyphs) {
-      // yes glyphs.push(...extraGlyphs) is nicer, but pulling in
-      // _toConsumableArray seems totally uneeded here
-      glyphs.push.apply(glyphs, extraGlyphs);
-    }
+    (extraGlyphs || []).forEach(g => {
+      let glyph = typeof g === "function" ? g(this) : g;
+      if (glyph) {
+        glyphs.push(glyph);
+      }
+    });
 
-    glyphs.push({ label: 'user.bookmarks',
-                      className: 'user-bookmarks-link',
-                      icon: 'bookmark',
-                      href: `${path}/activity/bookmarks` });
+    glyphs.push({
+      label: 'user.bookmarks',
+      className: 'user-bookmarks-link',
+      icon: 'bookmark',
+      href: `${path}/activity/bookmarks`
+    });
 
     if (siteSettings.enable_private_messages) {
       glyphs.push({ label: 'user.private_messages',
